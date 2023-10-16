@@ -1,0 +1,53 @@
+.custom-orange-bg {
+    background-color: #FB6B0E; /* Use the desired orange color */
+}
+
+/* Add this CSS to your stylesheet */
+.navbar-nav .nav-link {
+    text-decoration: none; /* Remove the default text underline */
+    position: relative;
+    font-weight: bold;/* Position relative to create a reference for the line */
+}
+
+.navbar-nav .nav-link:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px; /* Adjust the height of the line as needed */
+    background-color: #ffffff; /* Set the line color */
+    left: 0;
+    bottom: -2px; /* Adjust the position of the line as needed */
+    transform: scaleX(0); /* Initially set the line width to 0 */
+    transform-origin: 0 50%;
+    transition: transform 0.2s; /* Add a transition for smooth animation */
+}
+
+.navbar-nav .nav-link:hover:after {
+    transform: scaleX(1); /* Expand the line width to 100% on hover */
+}
+
+
+.nav-link:hover{
+    color: white !important;
+}
+
+
+/* Add this CSS to your stylesheet to lower the navbar height */
+.navbar {
+    padding-top: 5px; /* Adjust the top padding to decrease the height */
+    padding-bottom: 0;
+    /* Adjust the bottom padding to decrease the height */
+}
+
+
+.navbar-brand {
+    margin-top: -15px; /* Adjust the top margin to vertically center the logo */
+}
+
+.navcontainer{
+    margin-left: 0;
+}
+
+.custom-logout-link {
+    margin-left: auto;
+}
