@@ -1,43 +1,77 @@
-import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import React, {useEffect, useState} from "react";
+import {Table} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';  // Import Bootstrap CSS
 import {
     Container,
     Row,
     Col,
 } from "react-bootstrap";
-import { useJsApiLoader, GoogleMap, Marker, InfoWindow, Polyline } from "@react-google-maps/api";
+import {useJsApiLoader, GoogleMap, Marker, InfoWindow, Polyline} from "@react-google-maps/api";
+import axios from "axios";
+import {useParams} from "react-router-dom";
+import Swal from "sweetalert2";
 
-const center = { lat: 48.8584, lng: 2.2945 }; // Default center
+let center = {lat: 7.8731, lng: 80.7718}; // Default center
 
 function MapComponent() {
-    const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: "AIzaSyDvERMXD4BvE5p8HSXK8wLBQI5BtwxVhdU", // Replace with your Google Maps API key
+    const {repId} = useParams();
+
+    const {isLoaded, loadError} = useJsApiLoader({
+        googleMapsApiKey: "AIzaSyDvERMXD4BvE5p8HSXK8wLBQI5BtwxVhdU",
         libraries: ["geometry"],
     });
 
     const [map, setMap] = useState(/** @type google.maps.Map */ (null));
     const [locations, setLocations] = useState([]); // Array of location objects (latitude, longitude)
     const [selectedLocation, setSelectedLocation] = useState(null);
+    const [salesData, setSalesData] = useState([]);
+    const [contact, setContact] = useState("");
 
     useEffect(() => {
-        // Simulate fetching location data from the database
-        // In a real application, replace this with an API call to retrieve actual data
-        const fetchedLocations = [
-            { lat: 48.8588443, lng: 2.2943506 }, // Eiffel Tower
-            { lat: 48.856614, lng: 2.3522219 },  // Louvre Museum
-            { lat: 48.8614221, lng: 2.3325203 }, // Notre-Dame Cathedral
-        ];
+        // Fetch location data from your server
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getRepsLocation/${repId}`)
+            .then(response => {
+                console.log(response.data);
+                setLocations(response.data);
+            })
+            .catch(error => {
+                console.error("Error loading locations:", error);
+            });
 
-        setLocations(fetchedLocations);
+        axios
+            .get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesDataBydate/${repId}`)
+            .then((response) => {
+                if (response.data.length === 0) {
+                    // Show SweetAlert if there's no sales data
+                    Swal.fire("No Sales Data", "There's no sales data available.", "error").then(() => {
+                        // Handle navigation when the alert is closed
+                        // You can adjust the navigation URL as needed
+                        window.history.back(); // Navigate to the previous page
+                    });
+                } else {
+                    setSalesData(response.data[0]);
+                    console.log(response.data);
+                }
+            })
+            .catch((error) => {
+                console.error("Error loading sales data:", error);
+            });
+
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContacts/${repId}`)
+            .then(response => {
+                setContact(response.data[0].mobileNo);
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error("Error loading sales data:", error);
+            });
     }, []);
 
     if (!isLoaded || loadError) {
         return <p>Loading... Please wait.</p>;
     }
 
-    // Connect the locations in order to create a route from the first location to the last
-    const polylinePath = locations.map((location) => new window.google.maps.LatLng(location.lat, location.lng));
+    const polylinePath = locations.map(location => new window.google.maps.LatLng(location.lat, location.lng));
 
     return (
         <Container className="alog">
@@ -49,28 +83,24 @@ function MapComponent() {
                         <Table striped bordered hover responsive>
                             <tbody>
                             <tr>
-                                <th>Sales Ref:</th>
-                                <td>Nimal</td>
+                                <th>Sales Rep:</th>
+                                <td>{salesData.repId}</td>
                             </tr>
                             <tr>
                                 <th>Contact:</th>
-                                <td>07765364</td>
+                                <td>{contact}</td>
                             </tr>
                             <tr>
                                 <th>Customer:</th>
-                                <td>Kamal</td>
-                            </tr>
-                            <tr>
-                                <th>Address:</th>
-                                <td>Galle</td>
+                                <td>{salesData.customerId}</td>
                             </tr>
                             <tr>
                                 <th>Item:</th>
-                                <td>AASS345</td>
+                                <td>{salesData.itemName}</td>
                             </tr>
                             <tr>
                                 <th>Quantity:</th>
-                                <td>5</td>
+                                <td>{salesData.qty}</td>
                             </tr>
                             </tbody>
                         </Table>
@@ -78,12 +108,12 @@ function MapComponent() {
                     </div>
                 </Col>
                 <Col sm={8}>
-                    <div className="position-relative" style={{ height: "100vh" }}>
+                    <div className="position-relative" style={{height: "100vh"}}>
                         {/* Google Map Box */}
                         <GoogleMap
                             center={center}
                             zoom={12}
-                            mapContainerStyle={{ width: "100%", height: "100%" }}
+                            mapContainerStyle={{width: "100%", height: "100%"}}
                             options={{
                                 zoomControl: true,
                                 streetViewControl: true,
@@ -93,12 +123,18 @@ function MapComponent() {
                             onLoad={(map) => setMap(map)}
                         >
                             {locations.map((location, index) => {
-                                const label = index === 0 ? "A" : index === locations.length - 1 ? "B" : "";
+                                const label = {
+                                    text: `${index + 1}`, // Display index number (add 1 to make it 1-based index)
+                                    color: 'white', // Customize label text color
+                                    fontSize: '12px', // Customize font size
+                                    fontWeight: 'bold', // Customize font weight
+                                    // You can customize other label properties here
+                                };
                                 return (
                                     <Marker
                                         key={index}
                                         position={location}
-                                        label={label}
+                                        label={label} // Set the label with index number
                                         onClick={() => {
                                             setSelectedLocation(location);
                                         }}

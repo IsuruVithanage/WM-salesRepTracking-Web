@@ -11,7 +11,7 @@ const Home = () => {
     };
 
     const navigateToSalesLeader = () => {
-        navigate('/dlog'); // Navigate to the /patient route
+        navigate('/salesLeaderLogin'); // Navigate to the /patient route
     };
 
 

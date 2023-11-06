@@ -8,47 +8,53 @@ export default function AddSalesLeader() {
 
     const [salesLeader, setSalesLeader] = useState({
         name: "",
-        contact: "",
-        email: "",
-        address: ""
+        userName: "",
+        mobileNo: "",
+        address: "",
+        type: "leader"
     });
 
-    const {name, contact, email, address} = salesLeader;
-    /*
-        const onInputChange = (e) => {
-            setSalesLeader({...salesLeader, [e.target.name]: e.target.value});
-        };
+    const {name, userName, mobileNo, address, type} = salesLeader;
+    const onInputChange = (e) => {
+        setSalesLeader({...salesLeader, [e.target.name]: e.target.value});
+    };
 
-        const onSubmit = async (e) => {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to Save this!!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Save it!'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    Swal.fire(
-                        'Saved!',
-                        'Your file has been deleted.',
-                        'success'
-                    )
-                    await axios.post("http://localhost:8080/api/v1/salesLeader/saveSalesLeader", salesLeader);
-                    navigate("/salesLeader");
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to Save this!!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Save it!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const response = await axios.post("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/regUser", salesLeader);
+                if (response.data) {
+                    await Swal.fire({
+                        title: 'Saved!',
+                        text: 'SalesLeader saved successfully!',
+                        icon: 'success',
+                        html: `SalesLeader's Password: ${response.data}`
+                    });
+                    navigate("/salesLeader")
+
+                } else {
+                    Swal.fire('Error!', 'Failed to save SalesLeader.', 'error');
                 }
-            })
+            }
+        })
 
-        };*/
+    };
     return (
         <div className="container h-100 mx-auto">
             <div className="row h-100 justify-content-center align-items-center">
                 <div className="col-md-5  border rounded p-4 mt-lg-5 shadow">
                     <h2 className="text-center m-4">Register SalesLeader</h2>
 
-                    <form>
+                    <form onSubmit={(e) => onSubmit(e)}>
                         <div className="mb-3">
                             <label htmlFor="SalesLeadername" className="form-label">
                                 SalesLeader Name
@@ -59,33 +65,33 @@ export default function AddSalesLeader() {
                                 placeholder="Enter your salesLeadername"
                                 name="name"
                                 value={name}
-                                /*onChange={(e) => onInputChange(e)}*/
+                                onChange={(e) => onInputChange(e)}
                             />
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="Contact" className="form-label">
+                            <label htmlFor="userName" className="form-label">
+                                User Name
+                            </label>
+                            <input
+                                type={"text"}
+                                className="form-control"
+                                placeholder="Enter your userName"
+                                name="userName"
+                                value={userName}
+                                onChange={(e) => onInputChange(e)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="mobileNo" className="form-label">
                                 Contact
                             </label>
                             <input
                                 type={"text"}
                                 className="form-control"
-                                placeholder="Enter your contact"
-                                name="contact"
-                                value={contact}
-                                /*onChange={(e) => onInputChange(e)}*/
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="Email" className="form-label">
-                                Email
-                            </label>
-                            <input
-                                type={"text"}
-                                className="form-control"
-                                placeholder="Enter your e-mail"
-                                name="email"
-                                value={email}
-                                /*onChange={(e) => onInputChange(e)}*/
+                                placeholder="Enter your mobileNo"
+                                name="mobileNo"
+                                value={mobileNo}
+                                onChange={(e) => onInputChange(e)}
                             />
                         </div>
                         <div className="mb-3">
@@ -98,7 +104,7 @@ export default function AddSalesLeader() {
                                 placeholder="Enter your e-mail"
                                 name="address"
                                 value={address}
-                                /*onChange={(e) => onInputChange(e)}*/
+                                onChange={(e) => onInputChange(e)}
                             />
                         </div>
                         <button type="submit" className="obtn">

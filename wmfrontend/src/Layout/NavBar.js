@@ -1,18 +1,79 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import "../NavBar.css";
+import {NavLink} from "react-bootstrap";
 
-export default function NavBar() {
-    const location = useLocation();
+export default function NavBar({isAuthenticated, userRole}) {
+    const getNavLinks = () => {
+        if (isAuthenticated) {
+            if (userRole === "home") {
+                return (
+                    <>
+                    </>
+                );
+            } else if (userRole === "leader") {
+                return (
+                    <>
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto" to="/">
+                                LogOut
+                            </Link>
+                        </li>
 
-    // Check if the current route is the login page
-    const isLoginPage = location.pathname === "/"|location.pathname === "/adminLogin"; // Adjust the route as needed
+                    </>
+                );
+            } else if (userRole === "admin") {
+                return (
+                    <>
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto" activeClassName="active" to="/salesdata">
+                                SalesData
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto" activeClassName="active" to="/salesRef">
+                                SalesRep
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto" activeClassName="active" to="/salesLeader">
+                                SalesLeader
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto" activeClassName="mapCustomer" to="/mapCustomer">
+                                Customer Map
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto" to="/">
+                                LogOut
+                            </Link>
+                        </li>
+                    </>
+                );
+            } else {
+                return (
+                    <>
+                    </>
+                );
+            }
+        }
+    }
+
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light custom-orange-bg">
-            <div className="container navcontainer" style={{ marginLeft: "30em", marginRight: "0.2em"}}>
+            <div className="container navcontainer" style={{marginLeft: "30em", marginRight: "0.2em"}}>
                 <Link to="/" className="navbar-brand">
-                    <h1 style={{ color: "white", fontFamily: "Inter", fontWeight: "bold", marginTop: "0.6em", fontSize: "1.7rem", marginLeft: "-17em" }}>
+                    <h1 style={{
+                        color: "white",
+                        fontFamily: "Inter",
+                        fontWeight: "bold",
+                        marginTop: "0.6em",
+                        fontSize: "1.7rem",
+                        marginLeft: "-17em"
+                    }}>
                         SALES TRACKING SYSTEM
                     </h1>
                 </Link>
@@ -27,47 +88,9 @@ export default function NavBar() {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse justify-content-end" id="navbarNav" >
-                    <ul className="navbar-nav"> {/* Use ml-auto class */}
-                        {isLoginPage ? (
-                            <li className="nav-item">
-                                {/* Add any login-specific content or links here */}
-                            </li>
-                        ) : (
-                            // Render the regular links for other pages
-                            <>
-                                <li className="nav-item">
-                                    <Link to="/salesdata" className="nav-link">
-                                        SalesData
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/salesRef" className="nav-link">
-                                        SalesRep
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/salesLeader" className="nav-link">
-                                        SalesLeader
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/mapLocation" className="nav-link">
-                                        Location
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/mapCustomer" className="nav-link">
-                                        Customer Map
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/" className="nav-link">
-                                        LogOut
-                                    </Link>
-                                </li>
-                            </>
-                        )}
+                <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul className="navbar-nav">
+                        {getNavLinks()}
                     </ul>
                 </div>
             </div>

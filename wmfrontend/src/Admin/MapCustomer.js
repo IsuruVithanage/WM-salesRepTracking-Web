@@ -7,8 +7,9 @@ import {
     Col,
 } from "react-bootstrap";
 import { useJsApiLoader, GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
+import axios from "axios";
 
-const center = { lat: 48.8584, lng: 2.2945 }; // Default center
+const center = { lat: 7.8731, lng: 80.7718 }; // Default center
 
 export default function MapCustomer() {
     const { isLoaded, loadError } = useJsApiLoader({
@@ -19,26 +20,55 @@ export default function MapCustomer() {
     const [map, setMap] = useState(/** @type google.maps.Map */ (null));
     const [locations, setLocations] = useState([]); // Array of location objects (latitude, longitude)
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [customerDetails, setCustomerDetails] = useState(null);
+    const [customer, setCustomer] = useState(null);
+    const [customerDetails, setCustomerDetails] = useState([]);
 
     useEffect(() => {
-        // Simulate fetching location data from the database
-        // In a real application, replace this with an API call to retrieve actual data
-        const fetchedLocations = [
-            { lat: 48.8588443, lng: 2.2943506 }, // Eiffel Tower
-            { lat: 48.856614, lng: 2.3522219 },  // Louvre Museum
-            { lat: 48.8614221, lng: 2.3325203 }, // Notre-Dame Cathedral
-        ];
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getCustomerLocations`)
+            .then(response => {
+                setLocations(response.data);
+            })
+            .catch(error => {
+                console.error("Error loading locations:", error);
+            });
 
-        setLocations(fetchedLocations);
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getAllCustomerDetails`)
+            .then(response => {
+                setCustomerDetails(response.data);
+            })
+            .catch(error => {
+                console.error("Error loading locations:", error);
+            });
+
     }, []);
 
+    // Fetch customer details when a marker is clicked
     // Simulate fetching customer details when a marker is clicked
+    const tolerance = 0.0001; // Adjust the tolerance as needed
+
     const fetchCustomerDetails = (location) => {
-        // In a real application, make an API request to get customer details based on the location
-        // Update the customerDetails state with the fetched data
-        setCustomerDetails("nimal");
+        console.log("Clicked Location:", location);
+
+        const matchingCustomer = customerDetails.find((customer) => {
+            const latMatch = Math.abs(customer.lat - location.lat) < tolerance;
+            const lngMatch = Math.abs(customer.lng - location.lng) < tolerance;
+
+            console.log("Customer:", customer);
+            console.log("Lat Match:", latMatch);
+            console.log("Lng Match:", lngMatch);
+
+            return latMatch && lngMatch;
+        });
+
+        if (matchingCustomer) {
+            setCustomer(matchingCustomer);
+        } else {
+            console.log("Customer not found for location:", location);
+        }
     };
+
+
+
 
     if (!isLoaded || loadError) {
         return <p>Loading... Please wait.</p>;
@@ -51,16 +81,20 @@ export default function MapCustomer() {
                     <div className="p-4 h-100 bg-white shadow">
                         {/* Details Side */}
                         <h2>DETAILS</h2>
-                        {customerDetails ? (
+                        {customer ? (
                             <Table striped bordered hover responsive>
                                 <tbody>
                                 <tr>
                                     <th>Name:</th>
-                                    <td>{customerDetails.name}</td>
+                                    <td>{customer.name}</td>
                                 </tr>
                                 <tr>
                                     <th>Contact:</th>
-                                    <td>{customerDetails.contact}</td>
+                                    <td>{customer.mobileNo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Address:</th>
+                                    <td>{customer.address}</td>
                                 </tr>
                                 {/* Add more customer details here */}
                                 </tbody>
@@ -104,7 +138,7 @@ export default function MapCustomer() {
                                     position={selectedLocation}
                                     onCloseClick={() => {
                                         setSelectedLocation(null);
-                                        setCustomerDetails(null); // Close InfoWindow and reset customer details
+                                        setCustomer(null); // Close InfoWindow and reset customer details
                                     }}
                                 >
                                     <div>

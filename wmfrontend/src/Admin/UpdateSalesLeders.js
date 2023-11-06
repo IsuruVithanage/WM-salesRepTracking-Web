@@ -1,29 +1,41 @@
-import React, {useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-export default function AddSalesRef() {
+export default function UpdateSalesLeders() {
     let navigate = useNavigate();
 
-    const [salesRef, setSalesRef] = useState({
+    const {userId} = useParams();
+
+    const [users, setUser] = useState({
+        id: 0,
         name: "",
         userName: "",
         mobileNo: "",
         address: "",
-        type: "rep"
+        type: "",
+        managerId: 0
     });
 
-    const {name, userName, mobileNo, address, type} = salesRef;
+    const {name, userName, mobileNo, address, type, managerId} = users;
     const onInputChange = (e) => {
-        setSalesRef({...salesRef, [e.target.name]: e.target.value});
+        setUser({
+            ...users,
+            [e.target.name]: e.target.type === 'number' ? parseInt(e.target.value, 10) : e.target.value
+        });
     };
+
+
+    useEffect(() => {
+        loadUser();
+    }, []);
 
     const onSubmit = async (e) => {
         e.preventDefault();
         Swal.fire({
             title: 'Are you sure?',
-            text: "You want to Save this!!",
+            text: "You want to Update this!!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -31,38 +43,40 @@ export default function AddSalesRef() {
             confirmButtonText: 'Yes, Save it!'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const response = await axios.post("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/regUser", salesRef);
-                if (response.data) {
-                    await Swal.fire({
-                        title: 'Saved!',
-                        text: 'SalesRep saved successfully!',
-                        icon: 'success',
-                        html: `SalesRep's Password: ${response.data}`
-                    });
-                    navigate("/salesRef")
+                await Swal.fire(
+                    'Saved!',
+                    'Your sales data has been updated.',
+                    'success'
+                )
+                await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateUser`, users);
+                navigate("/salesLeader");
 
-                } else {
-                    Swal.fire('Error!', 'Failed to save SalesRep.', 'error');
-                }
             }
         })
 
     };
+
+
+    const loadUser = async () => {
+        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`);
+        console.log(result.data);
+        setUser(result.data[0]);
+    }
+
     return (
         <div className="container h-100 mx-auto">
             <div className="row h-100 justify-content-center align-items-center">
                 <div className="col-md-5  border rounded p-4 mt-lg-5 shadow">
-                    <h2 className="text-center m-4">Register SalesRef</h2>
-
+                    <h2 className="text-center m-2">Update Leader</h2>
                     <form onSubmit={(e) => onSubmit(e)}>
                         <div className="mb-3">
-                            <label htmlFor="SalesRefname" className="form-label">
-                                SalesRef Name
+                            <label htmlFor="name" className="form-label">
+                                Name
                             </label>
                             <input
                                 type={"text"}
                                 className="form-control"
-                                placeholder="Enter your salesRefname"
+                                placeholder="Enter your repid"
                                 name="name"
                                 value={name}
                                 onChange={(e) => onInputChange(e)}
@@ -75,7 +89,7 @@ export default function AddSalesRef() {
                             <input
                                 type={"text"}
                                 className="form-control"
-                                placeholder="Enter your contact"
+                                placeholder="Enter your userName"
                                 name="userName"
                                 value={userName}
                                 onChange={(e) => onInputChange(e)}
@@ -88,11 +102,26 @@ export default function AddSalesRef() {
                             <input
                                 type={"text"}
                                 className="form-control"
-                                placeholder="Enter your e-mail"
+                                placeholder="Enter your item name"
                                 name="mobileNo"
                                 value={mobileNo}
                                 onChange={(e) => onInputChange(e)}
                             />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="type" className="form-label">
+                                Type
+                            </label>
+                            <select
+                                className="form-select"
+                                name="type"
+                                value={type}
+                                onChange={(e) => onInputChange(e)}
+                            >
+                                <option value={type}>{type}</option>
+                                <option value="rep">rep</option>
+                                <option value="leader">leader</option>
+                            </select>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="Address" className="form-label">
@@ -101,7 +130,7 @@ export default function AddSalesRef() {
                             <input
                                 type={"text"}
                                 className="form-control"
-                                placeholder="Enter your e-mail"
+                                placeholder="Enter your bank"
                                 name="address"
                                 value={address}
                                 onChange={(e) => onInputChange(e)}
@@ -110,7 +139,7 @@ export default function AddSalesRef() {
                         <button type="submit" className="obtn">
                             Submit
                         </button>
-                        <Link className="bbtn" to="/d">
+                        <Link className="bbtn" to="/salesLeader">
                             Cancel
                         </Link>
                     </form>
