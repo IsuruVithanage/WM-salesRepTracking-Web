@@ -12,7 +12,12 @@ export default function SalesLeaderDetails() {
     }, []);
 
     const loadSalesLeader = async () => {
-        const result = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesLeaders");
+        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesLeaders`,{
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        });
         setSalesLeader(result.data);
     }
     const deleteSalesLeader = (id) => {
@@ -29,7 +34,12 @@ export default function SalesLeaderDetails() {
             if (result.isConfirmed) {
                 // User confirmed the deletion, send the delete request
                 try {
-                    await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/deletUser/${id}`);
+                    await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/deletUser/${id}`,{
+                        headers:{
+                            'access-token' : localStorage.getItem("token")
+                        }
+
+                    } );
                     // User feedback for successful deletion
                     Swal.fire('Deleted!', 'The user has been deleted.', 'success');
                     // Reload the sales data

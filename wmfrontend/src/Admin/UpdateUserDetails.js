@@ -48,8 +48,17 @@ export default function UpdateUserDetails() {
                     'Your sales data has been updated.',
                     'success'
                 )
-                await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateUser`, users);
-                navigate("/salesRef");
+                try {
+                    await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateUser`, users, {
+                        headers: {
+                            'access-token': localStorage.getItem("token")
+                        }
+                    });
+                    navigate("/salesRef");
+                } catch (error) {
+                    // Handle error, show an error alert
+                    Swal.fire('Error', 'An error occurred while updating the user.', 'error');
+                }
 
             }
         })
@@ -58,9 +67,18 @@ export default function UpdateUserDetails() {
 
 
     const loadUser = async () => {
-        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`);
-        console.log(result.data);
-        setUser(result.data[0]);
+        try {
+            const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`, {
+                headers: {
+                    'access-token': localStorage.getItem("token")
+                }
+            });
+            console.log(result.data);
+            setUser(result.data[0]);
+        }catch (error) {
+            // Handle error, show an error alert
+            Swal.fire('Error', 'An error occurred while loading the user.', 'error');
+        }
     }
 
     return (

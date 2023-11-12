@@ -12,8 +12,17 @@ export default function SalesRefDetails() {
     }, []);
 
     const loadSalesRef = async () => {
-        const result = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getAllReps");
-        setSalesRep(result.data);
+        try {
+            const result = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getAllReps", {
+                headers: {
+                    'access-token': localStorage.getItem("token")
+                }
+            });
+            setSalesRep(result.data);
+        } catch (error) {
+            // Handle error, show an error alert
+            Swal.fire('Error', 'An error occurred while loading the user.', 'error');
+        }
     }
 
     const deleteSalesRep = (id) => {
@@ -30,7 +39,11 @@ export default function SalesRefDetails() {
             if (result.isConfirmed) {
                 // User confirmed the deletion, send the delete request
                 try {
-                    await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/deletUser/${id}`);
+                    await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/deletUser/${id}`, {
+                        headers: {
+                            'access-token': localStorage.getItem("token")
+                        }
+                    });
                     // User feedback for successful deletion
                     await Swal.fire('Deleted!', 'The user has been deleted.', 'success');
                     // Reload the sales data
@@ -79,10 +92,12 @@ export default function SalesRefDetails() {
                                 <td>{salesRefs.address}</td>
                                 <td>{salesRefs.managerId}</td>
                                 <td>
-                                    <Link className="btn btn-sm btn-outline-primary mx-1" to={`/UserUpdate/${salesRefs.id}`}>
+                                    <Link className="btn btn-sm btn-outline-primary mx-1"
+                                          to={`/UserUpdate/${salesRefs.id}`}>
                                         Edit
                                     </Link>
-                                    <button className="btn btn-sm btn-outline-danger mx-1" onClick={() => deleteSalesRep(salesRefs.id)}>
+                                    <button className="btn btn-sm btn-outline-danger mx-1"
+                                            onClick={() => deleteSalesRep(salesRefs.id)}>
                                         Delete
                                     </button>
                                 </td>

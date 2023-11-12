@@ -14,7 +14,12 @@ export default function SLSalesRef() {
 
     const loadSalesRef = async () => {
         try {
-            const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getRepsByManager/${managerId}`);
+            const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getRepsByManager/${managerId}`, {
+                headers:{
+                    'access-token' : localStorage.getItem("token")
+                }
+
+            });
             console.log(result.data);
             setSalesRef(result.data);
         } catch (error) {

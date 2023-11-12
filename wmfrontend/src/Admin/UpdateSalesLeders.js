@@ -48,7 +48,12 @@ export default function UpdateSalesLeders() {
                     'Your sales data has been updated.',
                     'success'
                 )
-                await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateUser`, users);
+                await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateUser`, users, {
+                    headers:{
+                        'access-token' : localStorage.getItem("token")
+                    }
+
+                });
                 navigate("/salesLeader");
 
             }
@@ -58,7 +63,12 @@ export default function UpdateSalesLeders() {
 
 
     const loadUser = async () => {
-        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`);
+        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        });
         console.log(result.data);
         setUser(result.data[0]);
     }

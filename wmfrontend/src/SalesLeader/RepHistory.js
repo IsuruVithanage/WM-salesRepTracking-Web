@@ -14,7 +14,12 @@ export default function RepHistory() {
     }, []);
 
     const loadSales = async () => {
-        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesData/${repId}`);
+        const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesData/${repId}`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        });
         setSales(result.data);
     }
 

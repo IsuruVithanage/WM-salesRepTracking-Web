@@ -24,7 +24,12 @@ export default function MapCustomer() {
     const [customerDetails, setCustomerDetails] = useState([]);
 
     useEffect(() => {
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getCustomerLocations`)
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getCustomerLocations`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        })
             .then(response => {
                 setLocations(response.data);
             })
@@ -32,7 +37,12 @@ export default function MapCustomer() {
                 console.error("Error loading locations:", error);
             });
 
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getAllCustomerDetails`)
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getAllCustomerDetails`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        })
             .then(response => {
                 setCustomerDetails(response.data);
             })

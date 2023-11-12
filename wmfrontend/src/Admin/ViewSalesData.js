@@ -17,13 +17,21 @@ export default function ViewSalesData() {
     }, []);
 
     const loadSales = async () => {
-        const result = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesData");
+        const result = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesData", {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+        });
         setSales(result.data);
     }
 
     const fetchRepContacts = async () => {
         try {
-            const response = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContact");
+            const response = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContact", {
+                headers:{
+                    'access-token' : localStorage.getItem("token")
+                }
+            });
             const repContactData = response.data;
 
             // Convert the response data into an object with repId as keys
@@ -39,7 +47,11 @@ export default function ViewSalesData() {
     };
 
     function searchSaleDate(id) {
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/chechEnteredDate/${id}`)
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/chechEnteredDate/${id}`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+        })
             .then(response => {
                 console.log(response.data);
                 if (response.data){
@@ -81,8 +93,6 @@ export default function ViewSalesData() {
                                 <td>{sales.amount}</td>
                                 <td>{sales.time}</td>
                                 <td>
-                                    {/*<Link className="btn btn-sm btn-outline-primary mx-1"
-                                          to={`/salesData/${sales.salesId}`}>Edit</Link>*/}
                                     <button className="btn btn-sm btn-outline-primary mx-1"
                                         onClick={() => searchSaleDate(sales.salesId)}>Update
                                     </button>

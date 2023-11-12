@@ -29,7 +29,12 @@ function MapComponent() {
 
     useEffect(() => {
         // Fetch location data from your server
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getRepsLocation/${repId}`)
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getRepsLocation/${repId}`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        })
             .then(response => {
                 console.log(response.data);
                 setLocations(response.data);
@@ -39,7 +44,12 @@ function MapComponent() {
             });
 
         axios
-            .get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesDataBydate/${repId}`)
+            .get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesDataBydate/${repId}`, {
+                headers:{
+                    'access-token' : localStorage.getItem("token")
+                }
+
+            })
             .then((response) => {
                 if (response.data.length === 0) {
                     // Show SweetAlert if there's no sales data
@@ -57,7 +67,12 @@ function MapComponent() {
                 console.error("Error loading sales data:", error);
             });
 
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContacts/${repId}`)
+        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContacts/${repId}`, {
+            headers:{
+                'access-token' : localStorage.getItem("token")
+            }
+
+        })
             .then(response => {
                 setContact(response.data[0].mobileNo);
                 console.log(response.data);

@@ -13,39 +13,63 @@ export default function SalesLeaderLogin() {
 
     const { userName, pw } = salesLeaderCredentials;
 
+    const [errors, setErrors] = useState({
+        userName: "",
+        pw: "",
+    });
+
     const onInputChange = (e) => {
         setSalesLeaderCredentials({ ...salesLeaderCredentials, [e.target.name]: e.target.value });
     };
 
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = { userName: "", pw: "" };
+
+        if (!salesLeaderCredentials.userName) {
+            newErrors.userName = "Username is required";
+            isValid = false;
+        }
+
+        if (!salesLeaderCredentials.pw) {
+            newErrors.pw = "Password is required";
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/leaderlogin?userName=${userName}&pw=${pw}`)
-            .then((response) => {
-                // Check if the response data contains the user's ID (adjust this depending on the JSON structure)
-                const id = response.data[0].id;
-                console.log(id);
 
-                if (id) {
-                    // Use the ID to navigate to the SLSalesRep component
-                    Swal.fire("Success!", "Logged in successfully!", "success");
-                    navigate(`/SLSalesRep/${id}`);
-                } else {
-                    Swal.fire("Error!", "Invalid email or password", "error");
-                }
-            })
-            .catch((error) => {
-                if (error.response) {
-                    // The request was made, and the server responded with an error status code
-                    if (error.response.status === 401) {
-                        Swal.fire("Error!", "Invalid email or password", "error");
+        if (validateForm()) {
+            axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/leaderlogin?userName=${userName}&pw=${pw}`)
+                .then((response) => {
+                    // Check if the response data contains the user's ID (adjust this depending on the JSON structure
+                    if (response.data.Login) {
+                        // Use the ID to navigate to the SLSalesRep component
+                        localStorage.setItem("token",response.data.token);
+                        Swal.fire("Success!", "Logged in successfully!", "success");
+                        navigate(`/SLSalesRep/${response.data.result[0].id}`);
                     } else {
-                        Swal.fire("Error!", "An error occurred", "error");
+                        Swal.fire("Error!", "Invalid username or password", "error");
                     }
-                } else {
-                    // Network or other errors occurred
-                    Swal.fire("Error!", "Network error occurred", "error");
-                }
-            });
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // The request was made, and the server responded with an error status code
+                        if (error.response.status === 401) {
+                            Swal.fire("Error!", "Invalid username or password", "error");
+                        } else {
+                            Swal.fire("Error!", "An error occurred", "error");
+                        }
+                    } else {
+                        // Network or other errors occurred
+                        Swal.fire("Error!", "Network error occurred", "error");
+                    }
+                });
+        }
     };
 
     return (
@@ -60,12 +84,15 @@ export default function SalesLeaderLogin() {
                             </label>
                             <input
                                 type="text"
-                                className="form-control"
+                                className={`form-control ${errors.userName && "is-invalid"}`}
                                 placeholder="Enter your ID"
                                 name="userName"
                                 value={userName}
                                 onChange={(e) => onInputChange(e)}
                             />
+                            {errors.userName && (
+                                <div className="invalid-feedback">{errors.userName}</div>
+                            )}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="pw" className="form-label">
@@ -73,12 +100,15 @@ export default function SalesLeaderLogin() {
                             </label>
                             <input
                                 type="password"
-                                className="form-control"
+                                className={`form-control ${errors.pw && "is-invalid"}`}
                                 placeholder="Enter your password"
                                 name="pw"
                                 value={pw}
                                 onChange={(e) => onInputChange(e)}
                             />
+                            {errors.pw && (
+                                <div className="invalid-feedback">{errors.pw}</div>
+                            )}
                         </div>
                         <button type="submit" className="obtn">
                             Login
