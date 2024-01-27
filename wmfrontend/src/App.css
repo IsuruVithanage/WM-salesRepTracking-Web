@@ -108,3 +108,28 @@
   display: flex;
   flex-direction: column;
 }
+
+/* SalesDetails.css */
+
+/* SalesDetails.css */
+
+.sales-details {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Adjust column widths as needed */
+  grid-row-gap: 1em;
+  margin-bottom: 1em;
+  border: 2px solid #ccc; /* Add border to the entire sales details container */
+  padding: 1em; /* Add padding for better visual appearance */
+}
+
+.sales-label {
+  font-weight: bold;
+  border-bottom: 3px solid #ccc; /* Add border below each label */
+  padding-bottom: 0.5em; /* Add space between label and value */
+  margin-bottom: 0.5em; /* Add space between label-value pairs */
+}
+
+.sales-value {
+  margin-top: 0.5em;
+}
+

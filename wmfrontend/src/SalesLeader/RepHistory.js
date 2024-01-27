@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 export default function RepHistory() {
+    let navigate = useNavigate();
     const [sales, setSales] = useState([]);
 
     const {repId}=useParams();
@@ -20,6 +22,14 @@ export default function RepHistory() {
             }
 
         });
+
+        if (result.data === "Not authenticated" || result.data === "we need token") {
+            // Show an alert
+            Swal.fire('Not Authenticated', 'You are not authenticated.', 'error');
+            // Redirect to the main page or handle as needed
+            navigate('/');
+            return;  // Exit the function to prevent further execution
+        }
         setSales(result.data);
     }
 

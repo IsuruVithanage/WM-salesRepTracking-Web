@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Table} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';  // Import Bootstrap CSS
+import "../App.css"; // Import your CSS file
 import {
     Container,
     Row,
@@ -8,16 +9,17 @@ import {
 } from "react-bootstrap";
 import {useJsApiLoader, GoogleMap, Marker, InfoWindow, Polyline} from "@react-google-maps/api";
 import axios from "axios";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Swal from "sweetalert2";
 
 let center = {lat: 7.8731, lng: 80.7718}; // Default center
 
 function MapComponent() {
+    let navigate = useNavigate();
     const {repId} = useParams();
 
     const {isLoaded, loadError} = useJsApiLoader({
-        googleMapsApiKey: "AIzaSyDvERMXD4BvE5p8HSXK8wLBQI5BtwxVhdU",
+        googleMapsApiKey: "AIzaSyDyS9bX9HjvrbKccqFsnuuxn_E5eh3x21I",
         libraries: ["geometry"],
     });
 
@@ -25,7 +27,6 @@ function MapComponent() {
     const [locations, setLocations] = useState([]); // Array of location objects (latitude, longitude)
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [salesData, setSalesData] = useState([]);
-    const [contact, setContact] = useState("");
 
     useEffect(() => {
         // Fetch location data from your server
@@ -37,6 +38,14 @@ function MapComponent() {
         })
             .then(response => {
                 console.log(response.data);
+
+                if (response.data === "Not authenticated" || response.data === "we need token") {
+                    // Show an alert
+                    Swal.fire('Not Authenticated', 'You are not authenticated.', 'error');
+                    // Redirect to the main page or handle as needed
+                    navigate('/');
+                    return;  // Exit the function to prevent further execution
+                }
                 setLocations(response.data);
             })
             .catch(error => {
@@ -52,22 +61,22 @@ function MapComponent() {
             })
             .then((response) => {
                 if (response.data.length === 0) {
-                    // Show SweetAlert if there's no sales data
-                    Swal.fire("No Sales Data", "There's no sales data available.", "error").then(() => {
-                        // Handle navigation when the alert is closed
-                        // You can adjust the navigation URL as needed
-                        window.history.back(); // Navigate to the previous page
-                    });
+                    Swal.fire("No Sales Data", "There's no sales data available.", "error");
                 } else {
-                    setSalesData(response.data[0]);
-                    console.log(response.data);
+                    // Group sales data by date
+                    const groupedSalesData = groupBy(response.data, 'date');
+
+                    // Set sales data state
+                    setSalesData(groupedSalesData);
+
+                    console.log(groupedSalesData);
                 }
             })
             .catch((error) => {
                 console.error("Error loading sales data:", error);
             });
 
-        axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContacts/${repId}`, {
+        /*axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getrepContacts/${repId}`, {
             headers:{
                 'access-token' : localStorage.getItem("token")
             }
@@ -79,7 +88,7 @@ function MapComponent() {
             })
             .catch(error => {
                 console.error("Error loading sales data:", error);
-            });
+            });*/
     }, []);
 
     if (!isLoaded || loadError) {
@@ -88,38 +97,50 @@ function MapComponent() {
 
     const polylinePath = locations.map(location => new window.google.maps.LatLng(location.lat, location.lng));
 
+    function groupBy(array, key) {
+        return array.reduce((result, currentItem) => {
+            const groupKey = currentItem[key];
+            if (!result[groupKey]) {
+                result[groupKey] = [];
+            }
+            result[groupKey].push(currentItem);
+            return result;
+        }, {});
+    }
+
     return (
         <Container className="alog">
             <Row>
                 <Col sm={4}>
+                    {/* Details Side */}
                     <div className="p-4 h-100 bg-white shadow">
-                        {/* Details Side */}
-                        <h2>DETAILS</h2>
-                        <Table striped bordered hover responsive>
-                            <tbody>
-                            <tr>
-                                <th>Sales Rep:</th>
-                                <td>{salesData.repId}</td>
-                            </tr>
-                            <tr>
-                                <th>Contact:</th>
-                                <td>{contact}</td>
-                            </tr>
-                            <tr>
-                                <th>Customer:</th>
-                                <td>{salesData.customerId}</td>
-                            </tr>
-                            <tr>
-                                <th>Item:</th>
-                                <td>{salesData.itemName}</td>
-                            </tr>
-                            <tr>
-                                <th>Quantity:</th>
-                                <td>{salesData.qty}</td>
-                            </tr>
-                            </tbody>
-                        </Table>
-                        {/* Add details or any components you want */}
+                        <h2 style={{marginBottom:'2em'}}>DETAILS</h2>
+                        {Object.keys(salesData).map((date) => (
+                            <div key={date}>
+                                <Table>
+                                    <tbody>
+                                    {salesData[date].map((sale, index) => (
+                                        <div className="sales-details" key={index}>
+                                            <div className="sales-label">Sales Rep:</div>
+                                            <div className="sales-value">{sale.repUserName}</div>
+
+                                            <div className="sales-label">Contact:</div>
+                                            <div className="sales-value">{sale.mobileNo}</div>
+
+                                            <div className="sales-label">Customer:</div>
+                                            <div className="sales-value">{sale.name}</div>
+
+                                            <div className="sales-label">Item:</div>
+                                            <div className="sales-value">{sale.itemName}</div>
+
+                                            <div className="sales-label">Quantity:</div>
+                                            <div className="sales-value">{sale.qty}</div>
+                                        </div>
+                                    ))}
+                                    </tbody>
+                                </Table>
+                            </div>
+                        ))}
                     </div>
                 </Col>
                 <Col sm={8}>

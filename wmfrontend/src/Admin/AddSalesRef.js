@@ -114,7 +114,6 @@ export default function AddSalesRef() {
                                 className={`form-control ${errors.name && "is-invalid"}`}
                                 placeholder="Enter your salesRefname"
                                 name="name"
-                                value={name}
                                 onChange={(e) => onInputChange(e)}
                             />
                             {errors.name && (

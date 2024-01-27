@@ -8,17 +8,20 @@ export default function UpdateUserDetails() {
 
     const {userId} = useParams();
 
+    const [managers, setManagers] = useState([]);
+
     const [users, setUser] = useState({
         id: 0,
         name: "",
         userName: "",
+        pw: "",
         mobileNo: "",
         address: "",
         type: "",
         managerId: 0
     });
 
-    const {name, userName, mobileNo, address, type, managerId} = users;
+    const {name, userName,pw, mobileNo, address, type, managerId} = users;
     const onInputChange = (e) => {
         setUser({
             ...users,
@@ -29,6 +32,7 @@ export default function UpdateUserDetails() {
 
     useEffect(() => {
         loadUser();
+        fetchManagerIds();
     }, []);
 
     const onSubmit = async (e) => {
@@ -67,19 +71,46 @@ export default function UpdateUserDetails() {
 
 
     const loadUser = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`, {
+                    headers: {
+                        'access-token': localStorage.getItem("token")
+                    }
+                });
+                console.log(result.data);
+
+                if (result.data === "Not authenticated" || result.data === "we need token") {
+                    // Show an alert
+                    Swal.fire('Not Authenticated', 'You are not authenticated.', 'error');
+                    // Redirect to the main page or handle as needed
+                    navigate('/');
+                    return;  // Exit the function to prevent further execution
+                }
+                setUser(result.data[0]);
+            } catch (error) {
+                // Handle error, show an error alert
+                Swal.fire('Error', 'An error occurred while loading the user.', 'error');
+            }
+        }else {
+            Swal.fire('Error', 'Token is expired, Please LogIn.', 'error');
+            navigate('/adminLogin');
+        }
+    }
+
+    const fetchManagerIds = async () => {
         try {
-            const result = await axios.get(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getReps/${userId}`, {
+            const response = await axios.get("https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/getSalesLeaders", {
                 headers: {
                     'access-token': localStorage.getItem("token")
                 }
             });
-            console.log(result.data);
-            setUser(result.data[0]);
-        }catch (error) {
-            // Handle error, show an error alert
-            Swal.fire('Error', 'An error occurred while loading the user.', 'error');
+            setManagers(response.data);
+        } catch (error) {
+            console.error("Error loading manager IDs:", error);
         }
-    }
+    };
 
     return (
         <div className="container h-100 mx-auto">
@@ -110,6 +141,19 @@ export default function UpdateUserDetails() {
                                 placeholder="Enter your userName"
                                 name="userName"
                                 value={userName}
+                                onChange={(e) => onInputChange(e)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="pw" className="form-label">
+                                Password
+                            </label>
+                            <input
+                                type={"text"}
+                                className="form-control"
+                                placeholder="Enter your password"
+                                name="pw"
+                                value={pw}
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>
@@ -156,16 +200,22 @@ export default function UpdateUserDetails() {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="managerId" className="form-label">
-                                Manager ID
+                                Manager Name
                             </label>
-                            <input
-                                type={"number"}
+                            <select
                                 className="form-control"
-                                placeholder="Enter your branch"
                                 name="managerId"
                                 value={managerId}
                                 onChange={(e) => onInputChange(e)}
-                            />
+                            >
+                                <option >
+                                </option>
+                                {managers.map((manager) => (
+                                    <option key={manager.id} value={manager.id}>
+                                        {manager.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <button type="submit" className="obtn">
                             Submit

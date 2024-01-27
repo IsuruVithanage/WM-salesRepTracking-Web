@@ -4,6 +4,10 @@ import "../NavBar.css";
 import {NavLink} from "react-bootstrap";
 
 export default function NavBar({isAuthenticated, userRole}) {
+
+    const deleteToken = () => {
+        localStorage.clear();
+    }
     const getNavLinks = () => {
         if (isAuthenticated) {
             if (userRole === "home") {
@@ -15,7 +19,7 @@ export default function NavBar({isAuthenticated, userRole}) {
                 return (
                     <>
                         <li className="nav-item">
-                            <Link className="nav-link ul-auto" to="/">
+                            <Link className="nav-link ul-auto" to="/" onClick={() =>deleteToken()}>
                                 LogOut
                             </Link>
                         </li>
@@ -26,27 +30,33 @@ export default function NavBar({isAuthenticated, userRole}) {
                 return (
                     <>
                         <li className="nav-item">
-                            <Link className="nav-link ul-auto" activeClassName="active" to="/salesdata">
+                            <Link className="nav-link ul-auto active" to="/salesdata">
                                 SalesData
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link ul-auto" activeClassName="active" to="/salesRef">
+                            <Link className="nav-link ul-auto active" to="/salesRef">
                                 SalesRep
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link ul-auto" activeClassName="active" to="/salesLeader">
+                            <Link className="nav-link ul-auto active" to="/salesLeader">
                                 SalesLeader
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link ul-auto" activeClassName="mapCustomer" to="/mapCustomer">
+                            <Link className="nav-link ul-auto active" to="/viewProducts">
+                                Products
+                            </Link>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link className="nav-link ul-auto mapCustomer" to="/mapCustomer">
                                 Customer Map
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link ul-auto" to="/">
+                            <Link className="nav-link ul-auto" to="/" onClick={() =>deleteToken()}>
                                 LogOut
                             </Link>
                         </li>

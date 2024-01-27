@@ -59,7 +59,7 @@ export default function AdminLogin() {
                 .catch((error) => {
                     if (error.response) {
                         if (error.response.status === 401) {
-                            Swal.fire("Error!", "Invalid email or password", "error");
+                            Swal.fire("Error!", "Invalid username or password", "error");
                         } else {
                             Swal.fire("Error!", "An error occurred", "error");
                         }
@@ -83,7 +83,7 @@ export default function AdminLogin() {
                             <input
                                 type="text"
                                 className={`form-control ${errors.userName && "is-invalid"}`}
-                                placeholder="Enter your ID"
+                                placeholder="Enter your username"
                                 name="userName"
                                 value={userName}
                                 onChange={(e) => onInputChange(e)}

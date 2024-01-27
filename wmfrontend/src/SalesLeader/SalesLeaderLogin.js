@@ -85,7 +85,7 @@ export default function SalesLeaderLogin() {
                             <input
                                 type="text"
                                 className={`form-control ${errors.userName && "is-invalid"}`}
-                                placeholder="Enter your ID"
+                                placeholder="Enter your username"
                                 name="userName"
                                 value={userName}
                                 onChange={(e) => onInputChange(e)}

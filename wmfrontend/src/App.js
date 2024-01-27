@@ -18,6 +18,8 @@ import RepHistory from "./SalesLeader/RepHistory";
 import UpdateSalesDetails from "./Admin/UpdateSalesDetails";
 import UpdateUserDetails from "./Admin/UpdateUserDetails";
 import UpdateSalesLeders from "./Admin/UpdateSalesLeders";
+import ViewAllReps from "./Admin/ViewAllReps";
+import ViewProducts from "./Admin/ViewProducts";
 
 function App() {
     return (
@@ -118,6 +120,18 @@ function App() {
                         <div className={"row"}>
                             <NavBar isAuthenticated={true} userRole={""}/>
                             <UpdateSalesLeders/>
+                        </div>
+                    }/>
+                    <Route path={`/viewAllReps`} element={
+                        <div className={"row"}>
+                            <NavBar isAuthenticated={true} userRole={"admin"}/>
+                            <ViewAllReps/>
+                        </div>
+                    }/>
+                    <Route path={`/viewProducts`} element={
+                        <div className={"row"}>
+                            <NavBar isAuthenticated={true} userRole={"admin"}/>
+                            <ViewProducts/>
                         </div>
                     }/>
                 </Routes>

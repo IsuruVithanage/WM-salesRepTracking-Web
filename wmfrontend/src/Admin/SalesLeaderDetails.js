@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Swal from "sweetalert2";
 
 export default function SalesLeaderDetails() {
+    let navigate = useNavigate();
     const [salesLeader, setSalesLeader] = useState([]);
 
     useEffect(() => {
@@ -18,6 +19,14 @@ export default function SalesLeaderDetails() {
             }
 
         });
+
+        if (result.data === "Not authenticated" || result.data === "we need token") {
+            // Show an alert
+            Swal.fire('Not Authenticated', 'You are not authenticated.', 'error');
+            // Redirect to the main page or handle as needed
+            navigate('/');
+            return;  // Exit the function to prevent further execution
+        }
         setSalesLeader(result.data);
     }
     const deleteSalesLeader = (id) => {

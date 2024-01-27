@@ -12,13 +12,14 @@ export default function UpdateSalesLeders() {
         id: 0,
         name: "",
         userName: "",
+        pw: "",
         mobileNo: "",
         address: "",
         type: "",
         managerId: 0
     });
 
-    const {name, userName, mobileNo, address, type, managerId} = users;
+    const {name, userName,pw, mobileNo, address, type, managerId} = users;
     const onInputChange = (e) => {
         setUser({
             ...users,
@@ -45,7 +46,7 @@ export default function UpdateSalesLeders() {
             if (result.isConfirmed) {
                 await Swal.fire(
                     'Saved!',
-                    'Your sales data has been updated.',
+                    'User has been updated.',
                     'success'
                 )
                 await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateUser`, users, {
@@ -70,6 +71,13 @@ export default function UpdateSalesLeders() {
 
         });
         console.log(result.data);
+        if (result.data === "Not authenticated" || result.data === "we need token") {
+            // Show an alert
+            Swal.fire('Not Authenticated', 'You are not authenticated.', 'error');
+            // Redirect to the main page or handle as needed
+            navigate('/');
+            return;  // Exit the function to prevent further execution
+        }
         setUser(result.data[0]);
     }
 
@@ -102,6 +110,19 @@ export default function UpdateSalesLeders() {
                                 placeholder="Enter your userName"
                                 name="userName"
                                 value={userName}
+                                onChange={(e) => onInputChange(e)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="pw" className="form-label">
+                                Password
+                            </label>
+                            <input
+                                type={"text"}
+                                className="form-control"
+                                placeholder="Enter your password"
+                                name="pw"
+                                value={pw}
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>

@@ -10,8 +10,8 @@ export default function UpdateSalesDetails() {
 
     const [sales, setSales] = useState({
         salesId: 0,
-        repId: 0,
-        customerId: 0,
+        repUserName: "",
+        name: "",
         itemName: "",
         qty: 0,
         paymentMethod: "",
@@ -21,7 +21,7 @@ export default function UpdateSalesDetails() {
         remarks: ""
     });
 
-    const {repId, customerId, itemName, qty, paymentMethod, bank, branch, amount, remarks} = sales;
+    const {repUserName, name, itemName, qty, paymentMethod, bank, branch, amount, remarks} = sales;
     const onInputChange = (e) => {
         setSales({...sales, [e.target.name]: e.target.value});
     };
@@ -44,7 +44,7 @@ export default function UpdateSalesDetails() {
             if (result.isConfirmed) {
                 await Swal.fire(
                     'Saved!',
-                    'Your sales data has been updated.',
+                    'User has been updated.',
                     'success'
                 )
                 await axios.put(`https://maxol-sales-rep-track-api-akk9s.ondigitalocean.app/updateSales`, sales, {
@@ -66,6 +66,13 @@ export default function UpdateSalesDetails() {
             }
         });
         console.log(result.data);
+        if (result.data === "Not authenticated" || result.data === "we need token") {
+            // Show an alert
+            Swal.fire('Not Authenticated', 'You are not authenticated.', 'error');
+            // Redirect to the main page or handle as needed
+            navigate('/');
+            return;  // Exit the function to prevent further execution
+        }
         setSales(result.data[0]);
     }
 
@@ -76,28 +83,30 @@ export default function UpdateSalesDetails() {
                     <h2 className="text-center m-2">Update SalesData</h2>
                     <form onSubmit={(e) => onSubmit(e)}>
                         <div className="mb-3">
-                            <label htmlFor="repId" className="form-label">
-                                RepId
+                            <label htmlFor="repUserName" className="form-label">
+                                Rep Name
                             </label>
                             <input
                                 type={"text"}
                                 className="form-control"
                                 placeholder="Enter your repid"
-                                name="repId"
-                                value={repId}
+                                name="repUserName"
+                                value={repUserName}
+                                disabled={true}
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="userName" className="form-label">
-                                Customer Id
+                            <label htmlFor="name" className="form-label">
+                                Customer Name
                             </label>
                             <input
                                 type={"text"}
                                 className="form-control"
                                 placeholder="Enter your customer Id"
-                                name="customerId"
-                                value={customerId}
+                                name="name"
+                                value={name}
+                                disabled={true}
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>
